@@ -21,7 +21,7 @@
 
 #### How to use
    * Start APP http://omlu.localhost/#plain 
-   * Start App with Config http://gem.localhost/config.html#plain 
+   * Start App with Config http://omlu.localhost/config.html#plain 
 
 #### More Apps
    * https://github.com/exorciser-ch/gem
