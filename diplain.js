@@ -81,6 +81,8 @@ export const plain = ({query, store, info}) => {
 			padding: 4px;
 			background-color: #00FF93;
 			border-radius: .25rem 0 0 .25rem;
+			display: flex;
+			align-items: center;
 		`, resetIcon),
 		//button-text
 		m('span'+b`
