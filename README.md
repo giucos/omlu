@@ -2,7 +2,7 @@
 
 
 #### Setup
-   * install PHP
+   * [install PHP](https://www.php.net/manual/en/install.php)
    * clone this repository to web-root/omlu
    * Launch a PHP server<br>
      `php -S localhost:3000 server.php`
