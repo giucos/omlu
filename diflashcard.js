@@ -51,17 +51,6 @@ const icon = {
 }
 
 
-function resetFocus(id) {
-    var el = document.getElementById(id)
-    var range = document.createRange()
-    var sel = window.getSelection()
-    
-    range.setStart(el.childNodes[2], 5)
-    range.collapse(true)
-    
-    sel.removeAllRanges()
-    sel.addRange(range)
-}
 
 export const flashcard = ({query, store, info}) => {
 
@@ -76,6 +65,7 @@ export const flashcard = ({query, store, info}) => {
 	})
 */
 	let mode = 'edit';
+	let type = 'q';
 	let i = 0;
 	let cards = store()?.cards || query()?.cards || [];
 	console.log(cards)
@@ -84,8 +74,8 @@ export const flashcard = ({query, store, info}) => {
 //	const enabledReset = () => store()?.text != query()?.text;
 	const onClickChangeMode = () => { 
 		if (mode==='edit'){
-			mode='run';
-		} else if (mode==='run') {
+			mode='play';
+		} else if (mode==='play') {
 			mode='edit';
 		}	
 	 }
@@ -100,15 +90,21 @@ export const flashcard = ({query, store, info}) => {
 	const onClickPrevious = () => {
 		i--;
 		if (i<0) {i= numberOfCards-1};
+		type = 'q';
 	}
 	const onClickNext = () => {
 		i++;
 		if (i>=numberOfCards) {i= 0};
+		type = 'q';
 	}
-
+	const onClickAnswer = () => {
+		if (type === 'q') {type = 'a'} else { type = 'q'}
+	}
 	const onClickDelete = () => {
 		cards.splice(i, 1); 
 		numberOfCards--;
+		i--;
+		if (i<0) {i= numberOfCards-1}
 	}
 
 
@@ -118,6 +114,10 @@ export const flashcard = ({query, store, info}) => {
 		numberOfCards++;
 	}
 
+	// ============================================
+	//
+	// Button 
+	//
 	const button = (icon, text, onClickFunction) => 
 		//Button
 		m('button'+b`
@@ -155,6 +155,57 @@ export const flashcard = ({query, store, info}) => {
 	);
 
 
+	const textfield = (mode, type, content) => 
+		m('div'+b`
+			overflow: visible;
+			padding: 0.625rem;
+			display: table outside;
+			font-size: 0.875rem;
+			color: #B6B6B6;
+			background: transparent;
+			`,
+		m('div'+b`								// Label
+			position: absolute;
+			padding: 0.2rem 0 0 0.2rem;
+		`, (type === 'q') ? 'Front': 'Back'),            
+		m(((mode === 'edit') ? 'textarea' : 'div') + b`   
+			width: 100%;
+			resize: none;
+			padding: 0.625rem;
+			padding-top: 1.25rem;
+			outline: none;
+			border: 1px solid #F8F8F8;
+			background: #FFFFFF;
+			color: black;
+			font-size: 1.5rem;
+			text-align: center;
+			`.$focus(`border: 1px solid #00FF93;`), 
+			(mode === 'play') ? { innerText: (type === 'q') ? content.q : content.a,} :
+			(mode === 'hidden') ? { innerText: "  ??? " }:
+			{
+				value: (type === 'q') ? content.q : content.a,
+				oncreate: ({dom}) => {
+					var offset = dom.offsetHeight - dom.clientHeight + 3;
+					dom.style['box-sizing'] = 'border-box';
+					dom.style.height = 'auto';
+					dom.style.height = dom.scrollHeight + offset + 'px';
+					dom.addEventListener('input', ({target}) => {
+					target.style.height = 'auto';
+					target.style.height = target.scrollHeight + offset + 'px';
+					});
+				},
+				oninput: (({target: t}) =>  {
+					if (type === 'q'){
+    					content.q = t.value.substr(0, limit);
+					} else {
+						content.a = t.value.substr(0, limit);
+					}				
+				})
+			} 
+		)
+	);
+	
+
 
 	const nOfAll = ()=> m('span'+b`
 		padding: 0.625rem;
@@ -165,77 +216,54 @@ export const flashcard = ({query, store, info}) => {
 
 
 	//==================================================
-	//  run Mode View 
+	//  play Mode View 
     //==================================================                                          
-	const runView = () => m('div'+b` 
+	const playView = () => m('div'+b` 
 		border-left: 7px solid #00FF93;
 		padding: 0;
 		margin: 0;
 		width: 100%;
-		background-color: #F8F8F8;`, 
+		background-color: #F8F8F8;
+		`, 
 		//header
 		m('div'+b`
 			display: flex;
-
 			justify-content: space-between;
 			padding: 0.625rem;
-			margin: 0;`,
+			margin: 0;
+			`,
 			//header left
 			m('div'+b`
 				align-items: center;		
 				display: flex;
 				width: 33%;
 				font-size: 0.875rem;
-				justify-content: flex-start;`, button(icon.play, 'Edit Deck', onClickChangeMode)),
+				justify-content: flex-start;`, button(icon.play, 'Edit Deck', onClickChangeMode)
+			),
 			//header center
 			m('div'+b`
 				align-items: center;		
 				display: flex;
 				width: 33%;
 				font-size: 0.875rem;
-				justify-content: center;`, query().label + ' Deck'),
+				justify-content: center;
+			`, query().label + ' Deck'),
 			//header right
 			m('div'+b`
 				align-items: center;
 				display: flex;
 				width: 33%;
 				font-size: 0.875rem;
-				justify-content: flex-end;`, 
-				nOfAll(), 
+				justify-content: flex-end;
+			`,  nOfAll(), 
 				button(icon.fullscreen ,'', onClickFullScreen), 
 				spacer(),
 				button(icon.standalone ,'', onClickStandalone)
 			)
 		),
 		
-		m('div'+b`
-			overflow: visible;
-			padding: 0.625rem;
-			display: table outside;
-			font-size: 0.875rem;
-			color: #B6B6B6;
-			background: transparent;`,
-			m('div'+b`
-				position: absolute;
-				padding: 0.2rem 0 0 0.2rem;
-			`,'Front'),
-			//Textarea
-			m('div' + b`  
-				display: table-cell;    
-				width: 100vh;
-				height: 16vh;
-				resize: vertical;
-				outline: none;
-				padding: 0.625rem;
-				border: 1px solid #F8F8F8;
-				background: white;
-				color: black;
-				font-size: 1.25rem;
-				text-align: center;
-				`.$focus(`border: 1px solid #00FF93;`), 
-				{ 	innerText: cards && cards[i].q }
-			)
-		),
+		textfield('play', 'q', cards[i]),
+		textfield('hidden', 'a', cards[i]),
 
 		//footer
 		m('div'+b`
@@ -266,7 +294,7 @@ export const flashcard = ({query, store, info}) => {
 				justify-content: flex-end;`, 
 				button(icon.back ,'', onClickPrevious),
 				spacer(),
-				button(icon.forward, '', onClickNext)
+				button(icon.forward, '', onClickAnswer)
 			)
 		)
 	)
@@ -313,95 +341,10 @@ export const flashcard = ({query, store, info}) => {
 					)
 				),
 				
-				//front
-				m('div'+b`
-					overflow: visible;
-					padding: 0.625rem;
-					display: table outside;
-					font-size: 0.875rem;
-					color: #B6B6B6;
-					background: transparent;
-					`,
-					m('div'+b`
-						position: absolute;
-						padding: 0.2rem 0 0 0.2rem;
-					`,'Front'),
-					//Textarea
-					m('textarea' + b`   
-						width: 100%;
-						resize: none;
-						padding: 0.625rem;
-						padding-top: 1.25rem;
-						outline: none;
-						border: none;
-						color: black;
-						font-size: 1.5rem;
-						text-align: center;
-						`.$focus(`border: 1px solid #00FF93;`), 
-						{
-							value: cards && cards[i].q,
-							oncreate: ({dom}) => {
-								var offset = dom.offsetHeight - dom.clientHeight + 3;
-								dom.style['box-sizing'] = 'border-box';
-								dom.style.height = 'auto';
-								dom.style.height = dom.scrollHeight + offset + 'px';
-								dom.addEventListener('input', ({target}) => {
-								target.style.height = 'auto';
-								target.style.height = target.scrollHeight + offset + 'px';
-								});
-							},
-							oninput: (({target: t}) =>  {
-								cards[i].q = t.value.substr(0, limit);				
-							})
-						}
-					)
-				),
-		
-				//back
-				m('div'+b`
-					overflow: visible;
-					padding: 0.625rem;
-					display: table outside;
-					font-size: 0.875rem;
-					color: #B6B6B6;
-					background: transparent;
-					`,
-					m('div'+b`
-						position: absolute;
-						padding: 0.2rem 0 0 0.2rem;
-					`,'Back'),
-					//Textarea
-					m('textarea'+b`
-						width: 100%;				
-						resize: none;
-						padding: 0.625rem;
-						padding-top: 1.25rem;
-						outline: none;
-						border: 1px solid #F8F8F8;
-						color: black;
-						font-size: 1.5rem;
-						text-align: center;
-						`.$focus(`border: 1px solid #00FF93;`),
-						{
-							value: cards && cards[i].a,
-							onupdate: ({dom}) => {
-								var offset = dom.offsetHeight - dom.clientHeight + 3;
-								dom.style['box-sizing'] = 'border-box';
-								dom.style.height = 'auto';
-								dom.style.height = dom.scrollHeight + offset + 'px';
-								dom.addEventListener('input', ({target}) => {
-								target.style.height = 'auto';
-								target.style.height = target.scrollHeight + offset + 'px';
-								});
-							},
-							oninput: (({target: t}) =>  {
-								cards[i].a = t.value.substr(0, limit);
-							})
-						}
-					)
-				),
-
-
+				textfield(mode, 'q', cards[i]),
+				textfield(mode, 'a', cards[i]),
+				
+	
 				//footer
 				m('div'+b`
 					display: flex;
@@ -440,7 +383,7 @@ export const flashcard = ({query, store, info}) => {
 			)
 		
 	return { 
-		view: () => (mode==='run') ? runView() : editView()
+		view: () => (mode==='play') ? playView() : editView()
 	}
 }
 
@@ -452,8 +395,9 @@ flashcard.icon = "📄";
 flashcard.presets = true;
 flashcard.persistent = true;
 flashcard.options = [
-	{a: 'text', t: 'string', r: false, d: "", c: 'Text Preset' },
-	{a: 'limit', t: 'number', r: false, d: limit, c: 'Number of chars allowed' },
+	{a: 'label', t: 'string', r: false, d: "", c: 'Card Deck Name' },
+	{a: 'theme', t: 'string', r: true, d: "di", c: 'di, exorciser' },
+	{a: 'cards', t: 'array', r: false, d: [], c: 'Array of Card-Objects with (q)uestions and (a)nswers example [{"q": "1st question","a":"1st answer"},{"q": "2nd question","a":"2nd answer"}]'},
 ]
 
 export default flashcard;

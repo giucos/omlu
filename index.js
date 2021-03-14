@@ -1,8 +1,6 @@
 import m from '/vendor/mithril.js'
-import b from '/vendor/bss.js'
-import hs, {encode} from './hashstore.js'
+import hs from './hashstore.js'
 import w from './wrapper.js'
-import AceEditor from 'https://unpkg.com/ace-custom-element'
 
 const {log, warn} = console,
   { stringify, parse} = JSON
