@@ -6,7 +6,7 @@
    * clone this repository 
    * Launch a PHP server<br>
      `php -S localhost:3000 server.php`
-   * open your app on http://localhost:3000/#[appname]   (appnames: plain, dipain, diflashcard) <br> or with config info: http://localhost:3000/config.html#[appname]
+   * open your app on http://localhost:3000/#[appname]  <br> (appnames: plain, dipain, diflashcard)
    * have fun developping
    * commit your changes
 
