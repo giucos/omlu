@@ -85,9 +85,8 @@ export const plain = ({query, store, info}) => {
 			border-radius: .25rem;
 			transition: all .25s ease-in-out;
 		`
-		.$focus(`outline: none; border: none;`)
-		.$active(`outline: none; border: none;`)
-		.$hover(`background: #00FF93; cursor:pointer;`), 
+		.$focus(`outline: none; font-weight: bold; border: none;`)
+		.$active(`outline: none; font-weight: bold; border: none;`),
 		{
 //			disabled: !enabled(),
 			onclick: onClickFunction.bind()
@@ -95,12 +94,14 @@ export const plain = ({query, store, info}) => {
 		//Button Icon
 		m('div'+b`
 			padding: 4px;
-			background-color: #00FF93;
+			background-color: #D9D9D9;
 			border-radius: .25rem 0 0 .25rem;
 			display: flex;
 			align-items: center;
-		`, icon),
-		//button-text
+		`
+		.$focus(`outline: none; border: none;`)
+		.$active(`outline: none; background: #00FF93; border: none;`)
+		.$hover(`background: #00FF93; cursor:pointer;`), icon),		//button-text
 		text ? m('span'+b`
 			margin: 0;
 			margin-right: 0.6rem;
