@@ -275,8 +275,9 @@ export const flashcard = ({ query, store, info }) => {
 			)
 		),
 
-		textfield('play', 'q', cards[i]),
-		textfield('hidden', 'a', cards[i]),
+
+		textfield('play', 'q', cards[i]), //question 'fragen'
+		textfield('hidden', 'a', cards[i]), //answer 'antworten'
 
 		//footer
 		m('div' + b`
@@ -307,7 +308,9 @@ export const flashcard = ({ query, store, info }) => {
 				justify-content: flex-end;`,
 				button(icon.back, '', onClickPrevious),
 				spacer(),
-				button(icon.forward, '', onClickAnswer)
+				button(icon.forward, '', onClickAnswer),
+				button(icon.fail, 'fail', onClickAnswer)
+
 			)
 		)
 	)
