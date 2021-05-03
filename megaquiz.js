@@ -38,7 +38,7 @@ let allQuestions = [{
 		["Easy: substraction!", false],
 		["I'm a noob", false],
 	]
-/*}, {
+}, {
 	question: "Wer esch de ober G?",
 	answers: [
 		["superG, who else?", true],
@@ -51,7 +51,7 @@ let allQuestions = [{
 		["System.out.hack();", false],
 		["hack(now);", false],
 		["Guggus gsi, guggus geblieben.", true],
-	]*/
+	]
 }, {
 	question: "Wie mega esch s'MegaQuiz?",
 	answers: [
